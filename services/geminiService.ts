@@ -17,8 +17,6 @@ const getApiKey = () => {
   return '';
 };
 
-const ai = new GoogleGenAI({ apiKey: getApiKey() });
-
 // Define the expected output schema for strict JSON generation
 const dashboardSchema: Schema = {
   type: Type.OBJECT,
@@ -88,6 +86,15 @@ const dashboardSchema: Schema = {
 
 export const analyzeAdData = async (rawData: string): Promise<DashboardData> => {
   try {
+    // Initialize AI client specifically when needed, not at module load time
+    // This prevents "API key required" errors from crashing the app on startup
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      throw new Error("API Key가 설정되지 않았습니다. 환경 변수를 확인해주세요.");
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
+
     const prompt = `
       You are an expert Data Analyst and Marketing Specialist.
       I will provide you with raw advertising data pasted from a spreadsheet (CSV or TSV format).
@@ -121,8 +128,12 @@ export const analyzeAdData = async (rawData: string): Promise<DashboardData> => 
     } else {
       throw new Error("No response text generated");
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini Analysis Error:", error);
+    // Provide a more user-friendly error message
+    if (error.message?.includes('API Key')) {
+      throw new Error("API Key 오류: 키가 올바르게 설정되지 않았습니다.");
+    }
     throw new Error("데이터를 분석하는 중 오류가 발생했습니다. 데이터 형식을 확인해주세요.");
   }
 };
