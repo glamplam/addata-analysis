@@ -3,7 +3,7 @@ import { SavedReport, DashboardData } from '../types';
 import { getReports, deleteReport } from '../services/storageService';
 import { isCloudEnabled } from '../services/supabase';
 import DatabaseConfig from './DatabaseConfig';
-import { Trash2, ExternalLink, Calendar, FileBarChart, Search, Inbox, TrendingUp, DollarSign, Target, Award, RefreshCw, Settings, Database, Cloud, HardDrive } from 'lucide-react';
+import { Trash2, ExternalLink, Calendar, FileBarChart, Search, TrendingUp, DollarSign, Target, Award, RefreshCw, Database, Cloud, HardDrive } from 'lucide-react';
 
 interface AdminDashboardProps {
   onLoadReport: (data: DashboardData) => void;
