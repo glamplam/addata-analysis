@@ -4,10 +4,11 @@ import { DashboardData } from "../types";
 // Safely retrieve API Key without crashing in browser
 const getApiKey = () => {
   try {
+    // Check global process first (polyfill or node)
     if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
       return process.env.API_KEY;
     }
-    // Fallback or handle cases where env var is injected differently
+    // Check window.process explicitly for browser polyfills
     if (typeof window !== 'undefined' && (window as any).process && (window as any).process.env) {
       return (window as any).process.env.API_KEY || '';
     }
