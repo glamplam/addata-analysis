@@ -14,17 +14,20 @@ let supabaseInstance: SupabaseClient | null = null;
 const getEnvConfig = () => {
   try {
     // Check if process exists to avoid ReferenceError in browser environments
-    if (typeof process !== 'undefined' && process.env) {
-      const url = process.env.REACT_APP_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-      const key = process.env.REACT_APP_SUPABASE_KEY || process.env.VITE_SUPABASE_KEY;
+    const p = (typeof process !== 'undefined' ? process : { env: {} as any });
+    
+    // Safely access potential env vars
+    const env = p.env || {};
+    
+    const url = env.REACT_APP_SUPABASE_URL || env.VITE_SUPABASE_URL;
+    const key = env.REACT_APP_SUPABASE_KEY || env.VITE_SUPABASE_KEY;
       
-      if (url && key) {
-        return { url, key, source: 'env' as const };
-      }
+    if (url && key) {
+      return { url, key, source: 'env' as const };
     }
   } catch (e) {
-    // Silently fail if process access fails
-    console.debug("Environment variables not accessible:", e);
+    // Silently fail
+    console.debug("Environment variables check failed:", e);
   }
   return null;
 };

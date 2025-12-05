@@ -1,7 +1,23 @@
 import { GoogleGenAI, Type, Schema } from "@google/genai";
 import { DashboardData } from "../types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Safely retrieve API Key without crashing in browser
+const getApiKey = () => {
+  try {
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      return process.env.API_KEY;
+    }
+    // Fallback or handle cases where env var is injected differently
+    if (typeof window !== 'undefined' && (window as any).process && (window as any).process.env) {
+      return (window as any).process.env.API_KEY || '';
+    }
+  } catch (e) {
+    console.warn("Environment variable access failed", e);
+  }
+  return '';
+};
+
+const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
 // Define the expected output schema for strict JSON generation
 const dashboardSchema: Schema = {
